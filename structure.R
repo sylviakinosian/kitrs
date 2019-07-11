@@ -1,21 +1,56 @@
-structure_plot <- function(names, ninds = 60, klist){
+k2 <- read.csv("k2.txt", sep = '', header = F)
+k2 <- k2[,-(1:5)]
+k3 <- read.csv("k3.txt", sep = '', header = F)
+k3 <- k3[,-(1:5)]
+k4 <- read.csv("k4.txt", sep = '', header = F)
+k4 <- k4[,-(1:5)]
+k5 <- read.csv("k5.txt", sep = '', header = F)
+k5 <- k5[,-(1:5)]
+k6 <- read.csv("", sep = '', header = F)
+k6 <- k6[,-(1:5)]
+k7 <- read.csv("", sep = '', header = F)
+k7 <- k7[,-(1:5)]
+
+# names file includes individual ids, species names, and geographic locations
+names <- read.csv("names.csv", sep = ',', header = T)
+
+s <- as.data.frame(matrix(ncol = 18, nrow = 60))
+s[,1:2] <- k2
+s[,3:5] <- k3
+s[,6:9] <- k4
+s[,10:14] <- k5
+s[,15:18] <- names
+
+klist <- list()
+
+structure_plot(names, ninds = 67, klist)
+
+######################################################################
+# plotting and labeling function
+structure_plot <- function(labels, ninds = 60, klist){
 	# define colors
 	cols <- c('#A8FFFD', '#B862D3','#A39D9D','#FFFF00', '#ff5a5a', '#69C261', '#26CDCD', '#C1C6FF')
 	# unique label names
-	sp.names <- as.character(unique(names))
+	sp.names <- as.character(unique(labels))
 	#n <- as.data.frame(matrix(ncol = 1, nrow = ninds))
 	#n[,1] <- names
 	# locations of each column
 	b <- as.data.frame(matrix(ncol = 1, nrow = ninds))
 	b[,1] <- barplot(t(klist[[1]][1]), beside= F, col= cols, cex.name= 1, cex.axis= 1.2, border = 1, space = 0.05, xaxt = 'n', yaxt = 'n', cex.lab = 1, cex.main = 2)
 	# find locations for labels in the barplot
-	my.mean <- tapply(X = b[,1], INDEX = n, mean)
-	my.min <- tapply(X = b[,1], INDEX = n, min)
-	my.max <- tapply(X = b[,1], INDEX = n, max)
+	my.mean <- tapply(X = b[,1], INDEX = labels, mean)
+	my.min <- tapply(X = b[,1], INDEX = labels, min)
+	my.max <- tapply(X = b[,1], INDEX = labels, max)
 	# data frame for plotting
 	d <- sp_labels(names = sp.names, min = my.min, mean = my.mean, max = my.max)
 	# plot
 	plot_q_per_chain(klist)
+	text(cex = 1.5, x = (d[,2]-0.3), y = -0.7, labels = d[,1], xpd=NA, srt=50, font=3)
+	# lines
+	for (i in 1:length(d[,1])){
+		lines(x = d[i,3:4] , y = rep(-0.1, 2), lwd = 2.5, col = "black", xpd = NA)
+	}
+
 }
 
 # create labels
@@ -42,12 +77,7 @@ plot_q_per_chain <- function(kqlist, ...){
  	}
 	# x axis, rotating labels
 	# species labels
-	text(cex = 1.5, x = (d[,2]-0.3), y = -0.7, labels = d[,1], xpd=NA, srt=50, font=3)
-	# lines
-	for (i in 1:length(d[,1])){
-		lines(x = d[i,3:4] , y = rep(-0.1, 2), lwd = 2.5, col = "black", xpd = NA)
-	}
-	# location labels (make new df for this one?)
+		# location labels (make new df for this one?)
 	#text(cex = 1.7, x = (e[,3]-4), y = -0.9, labels = e[,1], xpd=na, srt=50, font=3)
 
 }
